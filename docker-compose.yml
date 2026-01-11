@@ -2,13 +2,12 @@ services:
   backend:
     build: ./backend
     container_name: localai-backend
+    env_file: .env
     ports:
       - "8000:8000"
     environment:
       - HOST=0.0.0.0
       - PORT=8000
-      - MODEL_NAME=${MODEL_NAME:-openai/gpt-oss-20b}
-      - HF_TOKEN=${HF_TOKEN}  # Passes your token from host to container
     volumes:
       - ./backend:/app  # Hot-reloading for development (optional)
       - ~/.cache/huggingface:/root/.cache/huggingface # Persist model downloads
