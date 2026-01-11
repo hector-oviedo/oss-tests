@@ -1,53 +1,88 @@
-import json
-import uuid
-from typing import AsyncGenerator
-
+import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
-import uvicorn
+from contextlib import asynccontextmanager
 
-from vllm.engine.arg_utils import AsyncEngineArgs
-from vllm.engine.async_llm_engine import AsyncLLMEngine
-from vllm.sampling_params import SamplingParams
-from vllm.utils import random_uuid
+import config
+from engine import LLMEngine
 
-app = FastAPI()
+# ------------------------------------------------------------------------------
+# Lifecycle Management
+# ------------------------------------------------------------------------------
 
-# Model configuration
-# Note: You can pass these as CLI arguments or environment variables
-MODEL_PATH = "facebook/opt-125m" # Default to a small model; user can change to gpt-oss-20b
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Handle startup and shutdown events.
+    Initializes the LLM engine when the server starts.
+    """
+    # 1. Initialize the LLM Engine (loads model into GPU memory)
+    engine = LLMEngine()
+    engine.initialize()
+    
+    yield
+    
+    # (Optional) Clean up resources on shutdown if needed
+    print("Shutting down API server...")
 
-engine_args = AsyncEngineArgs(model=MODEL_PATH)
-engine = AsyncLLMEngine.from_engine_args(engine_args)
+# ------------------------------------------------------------------------------
+# API Setup
+# ------------------------------------------------------------------------------
+
+app = FastAPI(
+    title="LocalAI Inference API",
+    description=f"High-performance inference for {config.MODEL_NAME}",
+    lifespan=lifespan
+)
+
+# ------------------------------------------------------------------------------
+# Endpoints
+# ------------------------------------------------------------------------------
 
 @app.get("/health")
-async def health() -> StreamingResponse:
-    """Health check endpoint."""
-    return StreamingResponse(iter([json.dumps({"status": "ok"})]), media_type="application/json")
+async def health_check():
+    """
+    Simple health check endpoint to verify the server is running.
+    """
+    return {"status": "active", "model": config.MODEL_NAME}
+
 
 @app.post("/generate")
-async def generate(request: Request) -> StreamingResponse:
-    """Generate completion and stream the results."""
-    request_dict = await request.json()
-    prompt = request_dict.pop("prompt")
-    sampling_params = SamplingParams(**request_dict)
-    request_id = random_uuid()
+async def generate_text(request: Request):
+    """
+    Main inference endpoint.
+    Accepts a JSON body with 'prompt' and optional sampling parameters.
+    Returns a streaming response (Server-Sent Events / NDJSON).
+    """
+    # Parse the request body
+    data = await request.json()
+    prompt = data.get("prompt")
+    
+    if not prompt:
+        return {"error": "Prompt is required"}
 
-    results_generator = engine.generate(prompt, sampling_params, request_id)
+    # Extract optional parameters
+    params = {
+        "temperature": data.get("temperature"),
+        "max_tokens": data.get("max_tokens"),
+        "top_p": data.get("top_p")
+    }
+    # Filter out None values to use defaults
+    params = {k: v for k, v in params.items() if v is not None}
 
-    async def stream_results() -> AsyncGenerator[bytes, None]:
-        last_output_text = ""
-        async for request_output in results_generator:
-            # vLLM returns the full text generated so far. 
-            # We calculate the delta to provide a streaming experience.
-            full_text = request_output.outputs[0].text
-            delta = full_text[len(last_output_text):]
-            last_output_text = full_text
-            
-            yield (json.dumps({"text": delta}) + "\n").encode("utf-8")
+    # Get the engine instance
+    engine = LLMEngine()
 
-    return StreamingResponse(stream_results(), media_type="application/x-ndjson")
+    # Return the streaming response using the engine's generator
+    return StreamingResponse(
+        engine.generate_stream(prompt, **params),
+        media_type="application/x-ndjson"
+    )
+
+# ------------------------------------------------------------------------------
+# Entry Point
+# ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-
+    print(f"Starting server on {config.HOST}:{config.PORT}")
+    uvicorn.run(app, host=config.HOST, port=config.PORT)
