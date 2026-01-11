@@ -1,6 +1,6 @@
-import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 import config
@@ -33,6 +33,15 @@ app = FastAPI(
     title="LocalAI Inference API",
     description=f"High-performance inference for {config.MODEL_NAME}",
     lifespan=lifespan
+)
+
+# Enable CORS for frontend development
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, specify the exact frontend domain
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # ------------------------------------------------------------------------------
