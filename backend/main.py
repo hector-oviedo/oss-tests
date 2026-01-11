@@ -1,7 +1,13 @@
+import uvicorn
+import os
 from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from dotenv import load_dotenv
+
+# Load environment variables from .env file (if it exists)
+load_dotenv(dotenv_path="../.env")
 
 import config
 from engine import LLMEngine
