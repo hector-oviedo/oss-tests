@@ -36,7 +36,8 @@ class LLMEngine:
         # Configure the engine arguments
         engine_args = AsyncEngineArgs(
             model=config.MODEL_NAME,
-            # You can add more vLLM optimizations here (e.g., tensor_parallel_size)
+            trust_remote_code=True,  # Often required for new/custom architectures
+            # tensor_parallel_size=1  # Set this to the number of GPUs you have
         )
         
         # Create the engine
