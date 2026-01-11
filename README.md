@@ -28,7 +28,25 @@ LocalAI is a streamlined, high-performance inference server designed to run open
 - Python 3.10 or higher
 - CUDA-enabled GPU (NVIDIA) for vLLM acceleration (optional for mock mode, required for real inference)
 
-### 🐍 Backend Setup
+## 🐳 Docker Support (Recommended)
+
+Run the entire stack (Backend + Frontend) with a single command.
+
+1.  **Export your Hugging Face Token:**
+    ```bash
+    export HF_TOKEN=hf_...
+    ```
+
+2.  **Start the services:**
+    ```bash
+    docker-compose up --build
+    ```
+
+    - **Frontend:** [http://localhost:3000](http://localhost:3000)
+    - **Backend API:** [http://localhost:8000](http://localhost:8000)
+    - **Model Cache:** Models are stored in `~/.cache/huggingface` on your host to avoid re-downloading.
+
+### 🐍 Manual Backend Setup
 
 1.  **Navigate to the backend:**
     ```bash
