@@ -19,7 +19,7 @@ LocalAI is a streamlined, high-performance inference server designed to run open
 ## 🛠️ Stack
 
 - **Backend:** Python 3.10+, FastAPI, vLLM, Uvicorn
-- **Frontend:** React (Vite) - *In Development*
+- **Frontend:** React (Vite) - *Active*
 
 ## 📦 Getting Started
 
