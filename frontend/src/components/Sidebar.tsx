@@ -1,16 +1,13 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { Zap, Terminal, Trash2 } from 'lucide-react';
-import type { Settings } from '../types';
 import { useHealth } from '../hooks/useHealth';
 
 interface SidebarProps {
-  settings: Settings;
-  setSettings: React.Dispatch<React.SetStateAction<Settings>>;
   isOpen: boolean;
   onClear: () => void;
 }
 
-export const Sidebar = memo(({ settings, setSettings, isOpen, onClear }: SidebarProps) => {
+export const Sidebar = memo(({ isOpen, onClear }: SidebarProps) => {
   const { isOnline, modelName } = useHealth();
 
   return (
@@ -29,11 +26,6 @@ export const Sidebar = memo(({ settings, setSettings, isOpen, onClear }: Sidebar
               <span className="text-xs text-slate-400">{isOnline ? 'Online' : 'Offline'}</span>
             </div>
           </div>
-          <div className="space-y-6">
-            <RangeControl label="Temperature" value={settings.temperature} min={0} max={2} step={0.1} onChange={(v: number) => setSettings(s => ({...s, temperature: v}))} desc="Higher = more random" />
-            <RangeControl label="Max Tokens" value={settings.maxTokens} min={64} max={4096} step={64} onChange={(v: number) => setSettings(s => ({...s, maxTokens: v}))} />
-            <RangeControl label="Top P" value={settings.topP} min={0} max={1} step={0.05} onChange={(v: number) => setSettings(s => ({...s, topP: v}))} />
-          </div>
         </div>
         <div className="pt-6 border-t border-slate-800">
           <button onClick={onClear} className="flex items-center gap-2 text-sm text-slate-400 hover:text-red-400 transition-colors w-full px-2 py-2 rounded-lg hover:bg-slate-800/50"><Trash2 size={16} />Clear History</button>
@@ -42,11 +34,3 @@ export const Sidebar = memo(({ settings, setSettings, isOpen, onClear }: Sidebar
     </div>
   );
 });
-
-const RangeControl = ({ label, value, min, max, step, onChange, desc }: any) => (
-  <div className="space-y-3">
-    <div className="flex justify-between text-sm"><span className="text-slate-400">{label}</span><span className="text-slate-200 font-mono">{value}</span></div>
-    <input type="range" min={min} max={max} step={step} value={value} onChange={e => onChange(Number(e.target.value))} className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500" />
-    {desc && <p className="text-xs text-slate-500">{desc}</p>}
-  </div>
-);

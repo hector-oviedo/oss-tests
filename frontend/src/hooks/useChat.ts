@@ -1,12 +1,12 @@
 import { useState, useRef, useCallback } from 'react';
-import type { Message, Settings } from '../types';
+import type { Message } from '../types';
 
 export const useChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const sendMessage = useCallback(async (text: string, settings: Settings) => {
+  const sendMessage = useCallback(async (text: string) => {
     if (!text.trim() || isLoading) return;
 
     const userMsg: Message = { id: Date.now().toString(), text, sender: 'user', timestamp: Date.now() };
@@ -23,9 +23,6 @@ export const useChat = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: text,
-          max_tokens: settings.maxTokens,
-          temperature: settings.temperature,
-          top_p: settings.topP,
         }),
         signal: abortControllerRef.current.signal,
       });

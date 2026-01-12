@@ -5,11 +5,6 @@ export interface Message {
   timestamp: number;
 }
 
-export interface Settings {
-  temperature: number;
-  maxTokens: number;
-  topP: number;
-}
 
 export interface ChatState {
   messages: Message[];

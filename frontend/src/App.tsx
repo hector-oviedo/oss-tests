@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Settings2 } from 'lucide-react';
 import { useChat } from './hooks/useChat';
-import type { Settings } from './types';
 import { Sidebar } from './components/Sidebar';
 import { ChatMessage } from './components/ChatMessage';
 import { ChatInput } from './components/ChatInput';
@@ -9,7 +8,6 @@ import { EmptyState } from './components/EmptyState';
 
 function App() {
   const { messages, isLoading, sendMessage, stopGeneration, clearHistory } = useChat();
-  const [settings, setSettings] = useState<Settings>({ temperature: 0.7, maxTokens: 1024, topP: 0.95 });
   const [showSettings, setShowSettings] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -17,7 +15,7 @@ function App() {
 
   return (
     <div className="flex h-screen bg-[#0B0F19] text-slate-100 font-sans overflow-hidden">
-      <Sidebar settings={settings} setSettings={setSettings} isOpen={showSettings} onClear={clearHistory} />
+      <Sidebar isOpen={showSettings} onClear={clearHistory} />
 
       <div className="flex-1 flex flex-col relative bg-[#0B0F19]">
         <div className="md:hidden flex items-center justify-between p-4 border-b border-slate-800 bg-[#0F131F]">
@@ -28,7 +26,7 @@ function App() {
         <div className="flex-1 overflow-y-auto scroll-smooth">
           <div className="max-w-3xl mx-auto px-4 py-8 space-y-8">
             {messages.length === 0 ? (
-              <EmptyState onSelect={text => sendMessage(text, settings)} />
+              <EmptyState onSelect={text => sendMessage(text)} />
             ) : (
               messages.map(msg => <ChatMessage key={msg.id} message={msg} />)
             )}
@@ -36,7 +34,7 @@ function App() {
           </div>
         </div>
 
-        <ChatInput onSend={text => sendMessage(text, settings)} onStop={stopGeneration} isLoading={isLoading} />
+        <ChatInput onSend={text => sendMessage(text)} onStop={stopGeneration} isLoading={isLoading} />
       </div>
     </div>
   );
