@@ -1,10 +1,10 @@
 import React, { memo } from 'react';
-import { Settings, Zap, Terminal, Trash2 } from 'lucide-react';
-import { Settings as SettingsType } from '../types';
+import { Zap, Terminal, Trash2 } from 'lucide-react';
+import type { Settings } from '../types';
 
 interface SidebarProps {
-  settings: SettingsType;
-  setSettings: React.Dispatch<React.SetStateAction<SettingsType>>;
+  settings: Settings;
+  setSettings: React.Dispatch<React.SetStateAction<Settings>>;
   isOpen: boolean;
   onClear: () => void;
 }
@@ -23,9 +23,9 @@ export const Sidebar = memo(({ settings, setSettings, isOpen, onClear }: Sidebar
           <div className="flex items-center gap-2 mt-2"><span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" /><span className="text-xs text-slate-400">Online</span></div>
         </div>
         <div className="space-y-6">
-          <RangeControl label="Temperature" value={settings.temperature} min={0} max={2} step={0.1} onChange={v => setSettings(s => ({...s, temperature: v}))} desc="Higher = more random" />
-          <RangeControl label="Max Tokens" value={settings.maxTokens} min={64} max={4096} step={64} onChange={v => setSettings(s => ({...s, maxTokens: v}))} />
-          <RangeControl label="Top P" value={settings.topP} min={0} max={1} step={0.05} onChange={v => setSettings(s => ({...s, topP: v}))} />
+          <RangeControl label="Temperature" value={settings.temperature} min={0} max={2} step={0.1} onChange={(v: number) => setSettings(s => ({...s, temperature: v}))} desc="Higher = more random" />
+          <RangeControl label="Max Tokens" value={settings.maxTokens} min={64} max={4096} step={64} onChange={(v: number) => setSettings(s => ({...s, maxTokens: v}))} />
+          <RangeControl label="Top P" value={settings.topP} min={0} max={1} step={0.05} onChange={(v: number) => setSettings(s => ({...s, topP: v}))} />
         </div>
       </div>
       <div className="pt-6 border-t border-slate-800">
