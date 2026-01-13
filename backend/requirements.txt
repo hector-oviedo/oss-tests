@@ -5,3 +5,4 @@ pydantic
 python-dotenv
 transformers
 jinja2
+openai-harmony>=0.0.8
