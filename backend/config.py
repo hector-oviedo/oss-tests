@@ -22,6 +22,6 @@ HOST = os.getenv("HOST", "0.0.0.0")
 PORT = int(os.getenv("PORT", 8000))
 
 # Inference defaults
-DEFAULT_TEMPERATURE = 0.7
-DEFAULT_TOP_P = 0.95
+DEFAULT_TEMPERATURE = 1
+DEFAULT_TOP_P = 1
 DEFAULT_MAX_TOKENS = 100

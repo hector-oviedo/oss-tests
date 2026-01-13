@@ -5,8 +5,10 @@ export interface Message {
   timestamp: number;
 }
 
+export type Mode = 'completion' | 'chat';
 
 export interface ChatState {
   messages: Message[];
   isLoading: boolean;
+  mode: Mode;
 }

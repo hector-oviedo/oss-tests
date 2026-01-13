@@ -3,3 +3,5 @@ uvicorn
 vllm
 pydantic
 python-dotenv
+transformers
+jinja2
