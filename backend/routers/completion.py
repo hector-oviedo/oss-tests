@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import StreamingResponse
 from engine import LLMEngine
 
@@ -29,6 +29,9 @@ async def completion_generate(request: Request):
 
     # Get the engine instance
     engine = LLMEngine()
+    
+    if engine.is_busy:
+        raise HTTPException(status_code=429, detail="Server is busy generating another response. Please wait.")
 
     # Return the streaming response using the engine's generator
     return StreamingResponse(
