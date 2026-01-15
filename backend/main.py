@@ -70,5 +70,6 @@ app.include_router(chat.router, prefix="/chat", tags=["Chat"])
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    print(f"Starting server on {config.HOST}:{config.PORT}")
-    uvicorn.run(app, host=config.HOST, port=config.PORT)
+    print(f"Starting server on {config.HOST}:{config.PORT} with auto-reload enabled")
+    # Use "main:app" string to enable reload
+    uvicorn.run("main:app", host=config.HOST, port=config.PORT, reload=True)

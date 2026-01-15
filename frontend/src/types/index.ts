@@ -3,6 +3,7 @@ export interface Message {
   text: string;
   sender: 'user' | 'bot';
   timestamp: number;
+  reasoning?: string;
 }
 
 export type Mode = 'completion' | 'chat';

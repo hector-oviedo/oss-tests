@@ -53,6 +53,7 @@ export const useChat = (mode: Mode) => {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let accumulatedText = '';
+      let accumulatedReasoning = '';
 
       while (true) {
         const { value, done } = await reader.read();
@@ -65,8 +66,18 @@ export const useChat = (mode: Mode) => {
           if (!line.trim()) continue;
           try {
             const data = JSON.parse(line);
-            accumulatedText += data.text;
-            setMessages(prev => prev.map(msg => msg.id === botMsgId ? { ...msg, text: accumulatedText } : msg));
+            const chunkText = data.text || '';
+            const type = data.type || 'content';
+
+            if (type === 'reasoning') {
+                accumulatedReasoning += chunkText;
+            } else {
+                accumulatedText += chunkText;
+            }
+
+            setMessages(prev => prev.map(msg => 
+                msg.id === botMsgId ? { ...msg, text: accumulatedText, reasoning: accumulatedReasoning } : msg
+            ));
           } catch (e) { console.error('Parse error', e); }
         }
       }

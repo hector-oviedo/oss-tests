@@ -15,6 +15,14 @@ export const ChatMessage = memo(({ message }: { message: Message }) => {
         {isUser ? <User size={16} /> : <Bot size={16} />}
       </div>
       <div className={`relative max-w-[85%] rounded-2xl px-6 py-4 text-[15px] leading-7 shadow-sm ${isUser ? 'bg-slate-800 text-slate-100 rounded-tr-sm' : 'bg-transparent text-slate-200 -ml-2'}`}>
+        {!isUser && message.reasoning && (
+          <details className="mb-4 text-xs text-slate-400 bg-slate-900/50 rounded-lg p-2 border border-slate-800">
+            <summary className="cursor-pointer hover:text-slate-300 select-none font-medium mb-1">Thinking Process</summary>
+            <div className="pl-2 border-l-2 border-slate-700 italic whitespace-pre-wrap font-mono mt-1 leading-relaxed">
+              {message.reasoning}
+            </div>
+          </details>
+        )}
         {isUser ? message.text : (
           <div className="markdown-content prose prose-invert prose-p:leading-7 prose-pre:bg-[#1e1e1e] prose-pre:rounded-xl prose-pre:border prose-pre:border-slate-800">
             <ReactMarkdown 
